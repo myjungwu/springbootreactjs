@@ -16,7 +16,7 @@ collation-server               = utf8mb4_unicode_ci
 EOF
 
 docker run --name mysql-svc -d --net msanet --net-alias=mysql-svc \
--v /work/test3/db/conf:/conf.d/etc/mysql/conf.d \
+-v /work/test3/db/conf:/etc/mysql/conf.d \
 -e MYSQL_ROOT_PASSWORD='mysqlroot' \
 -e MYSQL_DATABASE='boot_db' \
 -e MYSQL_USER='boot' \
