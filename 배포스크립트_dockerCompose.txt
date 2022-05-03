@@ -1,0 +1,59 @@
+
+mkdir -p /work/test3/db/conf
+mkdir -p /work/test3/db/data
+
+cat <<EOF | sudo tee /work/test3/db/conf/my.cnf
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+character-set-client-handshake = FALSE
+character-set-server           = utf8mb4
+collation-server               = utf8mb4_unicode_ci
+EOF
+
+
+mkdir -p /work/test3/db/env
+cat <<EOF | sudo tee /work/test3/db/env/.env
+MYSQL_HOST=mysql-svc
+MYSQL_PORT=3306
+MYSQL_ROOT_PASSWORD=mysqlroot
+MYSQL_DATABASE=boot_db
+MYSQL_USER=boot
+MYSQL_PASSWORD=boot
+MYSQL_ROOT_HOST='%'
+EOF
+
+
+mkdir -p /work/myproject 
+
+cat <<EOF| sudo tee /work/myproject/docker-compose.yml
+
+version: "3"
+
+services:
+  mysql-svc:
+    image: mariadb:10.3
+    volumes:
+      - /work/test3/db/conf:/etc/mysql/conf.d
+      - /work/test3/db/data:/var/lib/mysql
+    env_file: /work/test3/db/env/.env
+
+  mywas:
+    image: vega2k/springbootreactjs:boot
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-svc
+    restart: always
+
+  mynginx:
+    image: vega2k/springbootreactjs:react
+    depends_on:
+      - mywas  
+    ports:
+      - "80:80"
+EOF
