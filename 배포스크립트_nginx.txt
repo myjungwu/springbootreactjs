@@ -1,0 +1,29 @@
+docker network create --driver bridge msanet
+
+mkdir -p /work/test3/db/conf
+
+cat <<EOF | sudo tee /work/test3/db/conf/my.cnf
+[client]
+default-character-set = utf8mb4
+
+[mysql]
+default-character-set = utf8mb4
+
+[mysqld]
+character-set-client-handshake = FALSE
+character-set-server           = utf8mb4
+collation-server               = utf8mb4_unicode_ci
+EOF
+
+docker run --name mysql-svc -d --net msanet --net-alias=mysql-svc \
+-v /work/test3/db/conf:/conf.d/etc/mysql/conf.d \
+-e MYSQL_ROOT_PASSWORD='mysqlroot' \
+-e MYSQL_DATABASE='boot_db' \
+-e MYSQL_USER='boot' \
+-e MYSQL_PASSWORD='boot' \
+-e MYSQL_ROOT_HOST='%' \
+mariadb:10.3
+
+docker run --name mywas -d -p 8080:8080 --net msanet --net-alias=mywas vega2k/springbootreactjs:boot
+
+docker run --name myweb -d -p 80:80 --net msanet vega2k/springbootreactjs:react
