@@ -6,16 +6,6 @@ class ListEmployeeComponent extends Component {
     state = {
         employees: []
     }
-    // constructor(props) {
-    //     super(props)
-
-    //     this.state = {
-    //             employees: []
-    //     }
-    //     this.addEmployee = this.addEmployee.bind(this);
-    //     this.editEmployee = this.editEmployee.bind(this);
-    //     this.deleteEmployee = this.deleteEmployee.bind(this);
-    // }
 
     componentDidMount(){
         EmployeeService.getEmployees().then((res) => {
@@ -26,31 +16,28 @@ class ListEmployeeComponent extends Component {
             console.log(JSON.stringify(error));
         });
     }
-
     
     deleteEmployee = (id) => {
-        //this.dialog.showAlert('Hello Dialog!');
         this.dialog.show({
             title: 'Employee Delete',
+            body: 'Are you sure you want to delete it?',
             actions: [
               Dialog.CancelAction(),
-              Dialog.OKAction()
+              Dialog.OKAction(
+                () => {
+                    console.log('Remove action will be executed!')
+                    EmployeeService.deleteEmployee(id).then( res => {
+                        this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});
+                    });
+                }
+              )
             ],
             bsSize: 'small',
             onHide: (dialog) => {
               dialog.hide()
               console.log('closed by clicking background.')
             }
-          });
-
-          Dialog.CancelAction(() => {
-            console.log('Cancel was clicked!')
-          })
-          Dialog.OKAction(() => {
-            EmployeeService.deleteEmployee(id).then( res => {
-                this.setState({employees: this.state.employees.filter(employee => employee.id !== id)});
-            });
-          })
+          });    
     }
     viewEmployee = (id) => {
         this.props.history.push(`/view-employee/${id}`);
@@ -67,8 +54,8 @@ class ListEmployeeComponent extends Component {
         const { addEmployee, editEmployee, deleteEmployee, viewEmployee } = this;
 
         return (
-            <div>
-                <Dialog ref={(el) => { this.dialog = el }} />
+            <div>                 
+                 <Dialog ref={(el) => { this.dialog = el }} />
                  <h2 className="text-center">Employees List</h2>
                  <div className = "row">
                     <button className="btn btn-primary" onClick={addEmployee}>
