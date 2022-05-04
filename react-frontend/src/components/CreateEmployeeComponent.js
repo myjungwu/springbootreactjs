@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import EmployeeService from '../services/EmployeeService';
-
+import Dialog from 'react-bootstrap-dialog';
 class CreateEmployeeComponent extends Component {
     state = {
         // step 2
@@ -9,21 +9,6 @@ class CreateEmployeeComponent extends Component {
         lastName: '',
         emailId: ''
     }
-
-    // constructor(props) {
-    //     super(props)
-
-    //     this.state = {
-    //         // step 2
-    //         id: this.props.match.params.id,
-    //         firstName: '',
-    //         lastName: '',
-    //         emailId: ''
-    //     }
-    //     this.changeFirstNameHandler = this.changeFirstNameHandler.bind(this);
-    //     this.changeLastNameHandler = this.changeLastNameHandler.bind(this);
-    //     this.saveOrUpdateEmployee = this.saveOrUpdateEmployee.bind(this);
-    // }
 
     // step 3
     componentDidMount(){
@@ -34,11 +19,14 @@ class CreateEmployeeComponent extends Component {
         }else{
             EmployeeService.getEmployeeById(this.state.id)
             .then( (res) =>{
-                let employee = res.data;
-                this.setState({firstName: employee.firstName,
-                    lastName: employee.lastName,
-                    emailId : employee.emailId
-                });
+                const employee = res.data;
+                const { firstName, lastName, emailId } = employee;
+
+                this.setState({firstName,lastName, emailId});
+            })
+            .catch(error => {
+                console.log("==> getEmployeeById Error Occurred ");
+                console.log(JSON.stringify(error));
             });
         }        
     }
@@ -57,7 +45,10 @@ class CreateEmployeeComponent extends Component {
             })
             .catch(error => {
                 console.log("===> createEmployee Error Occurred ");
-                console.log(JSON.stringify(error));
+                console.log(error.response.status);
+                if(error.response.status === 500){
+                    this.dialog.showAlert('입력항목 확인하세요! '+ JSON.stringify(error.response.data.error));
+                }
             });
         //수정    
         }else{
@@ -81,16 +72,6 @@ class CreateEmployeeComponent extends Component {
         });
     }
 
-    // changeFirstNameHandler= (event) => {
-    //     this.setState({firstName: event.target.value});
-    // }
-    // changeLastNameHandler= (event) => {
-    //     this.setState({lastName: event.target.value});
-    // }
-    // changeEmailHandler= (event) => {
-    //     this.setState({emailId: event.target.value});
-    // }
-
     cancel = () => {
         this.props.history.push('/employees');
     }
@@ -108,6 +89,7 @@ class CreateEmployeeComponent extends Component {
 
         return (
             <div>
+                <Dialog ref={(el) => { this.dialog = el }} />
                 <br></br>
                    <div className = "container">
                         <div className = "row">
