@@ -2,22 +2,32 @@ import React, { Component } from 'react'
 import EmployeeService from '../services/EmployeeService'
 
 class ViewEmployeeComponent extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            id: this.props.match.params.id,
-            employee: {}
-        }
+    state = {
+        id: this.props.match.params.id,
+        employee: {}
     }
+    // constructor(props) {
+    //     super(props)
+
+    //     this.state = {
+    //         id: this.props.match.params.id,
+    //         employee: {}
+    //     }
+    // }
 
     componentDidMount(){
         EmployeeService.getEmployeeById(this.state.id).then( res => {
             this.setState({employee: res.data});
         })
+        .catch(error => {
+            console.log("===> viewEmployee Error Occurred ");
+            console.log(JSON.stringify(error));
+        });
     }
 
     render() {
+        const { firstName, lastName, emailId} = this.state.employee;
+
         return (
             <div>
                 <br></br>
@@ -26,15 +36,15 @@ class ViewEmployeeComponent extends Component {
                     <div className = "card-body">
                         <div className = "row">
                             <label> Employee First Name: </label>
-                            <div> { this.state.employee.firstName }</div>
+                            <div> { firstName }</div>
                         </div>
                         <div className = "row">
                             <label> Employee Last Name: </label>
-                            <div> { this.state.employee.lastName }</div>
+                            <div> { lastName }</div>
                         </div>
                         <div className = "row">
                             <label> Employee Email ID: </label>
-                            <div> { this.state.employee.emailId }</div>
+                            <div> { emailId }</div>
                         </div>
                     </div>
 
