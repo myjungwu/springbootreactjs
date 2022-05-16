@@ -1,5 +1,9 @@
 package net.javaguides.springboot.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +13,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "employees")
+@Builder
+@AllArgsConstructor
 public class Employee {
 	
 	@Id

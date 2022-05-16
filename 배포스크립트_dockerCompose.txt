@@ -51,7 +51,7 @@ services:
     restart: always
 
   mynginx:
-    image: vega2k/springbootreactjs:react_v2
+    image: vega2k/springbootreactjs:react_docker
     depends_on:
       - mywas  
     ports:
